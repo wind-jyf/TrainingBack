@@ -1,2 +1,4 @@
-# TrainingBack
-实训后端部分
+# for development
+    yarn start
+# for production
+    yarn build && yarn production

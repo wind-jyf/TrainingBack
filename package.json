@@ -1,0 +1,46 @@
+{
+  "name": "picshow",
+  "version": "1.0.0",
+  "description": "web that show pics",
+  "main": "./src/index.ts",
+  "scripts": {
+    "start": "nodemon",
+    "build": "rm -rf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "production": "cross-env NODE_ENV=production pm2 start pm2.config.js",
+    "yarn-install": "node ./src/deploy/yarn-1.22.4.js install"
+  },
+  "author": "dujiawei.kakarot",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/koa": "^2.11.0",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-router": "^7.0.42",
+    "nodemon": "^2.0.1",
+    "ts-node": "^8.5.4",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "@types/koa-send": "^4.1.2",
+    "@types/koa-session": "^5.10.2",
+    "@types/koa-static": "^4.0.1",
+    "@types/module-alias": "^2.0.0",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
+    "cross-env": "^7.0.2",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^7.4.0",
+    "koa-send": "^5.0.0",
+    "koa-session": "^6.0.0",
+    "koa-static": "^5.0.0",
+    "module-alias": "^2.2.2",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.8.0",
+    "typedi": "^0.8.0",
+    "typeorm": "^0.2.24"
+  }
+}

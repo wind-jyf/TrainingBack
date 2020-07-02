@@ -1,0 +1,11 @@
+{
+    "verbose": true,
+    "ext": "ts",
+    "watch": ["src"],
+    "ignore": [],
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "exec": "npx ts-node -r tsconfig-paths/register --files src/index.ts"
+  }
+  

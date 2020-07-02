@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "http://localhost:3001/static/css/main.965f5a57.chunk.css",
+    "main.js": "http://localhost:3001/static/js/main.47bdc8de.chunk.js",
+    "main.js.map": "http://localhost:3001/static/js/main.47bdc8de.chunk.js.map",
+    "runtime-main.js": "http://localhost:3001/static/js/runtime-main.2b7f87cf.js",
+    "runtime-main.js.map": "http://localhost:3001/static/js/runtime-main.2b7f87cf.js.map",
+    "static/css/2.35fcc229.chunk.css": "http://localhost:3001/static/css/2.35fcc229.chunk.css",
+    "static/js/2.94bc72ef.chunk.js": "http://localhost:3001/static/js/2.94bc72ef.chunk.js",
+    "static/js/2.94bc72ef.chunk.js.map": "http://localhost:3001/static/js/2.94bc72ef.chunk.js.map",
+    "index.html": "http://localhost:3001/index.html",
+    "precache-manifest.800d712538a2b0ef37b9d8f4f6a73ed0.js": "http://localhost:3001/precache-manifest.800d712538a2b0ef37b9d8f4f6a73ed0.js",
+    "service-worker.js": "http://localhost:3001/service-worker.js",
+    "static/css/2.35fcc229.chunk.css.map": "http://localhost:3001/static/css/2.35fcc229.chunk.css.map",
+    "static/css/main.965f5a57.chunk.css.map": "http://localhost:3001/static/css/main.965f5a57.chunk.css.map",
+    "static/media/news.jpg": "http://localhost:3001/static/media/news.924a74c9.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2b7f87cf.js",
+    "static/css/2.35fcc229.chunk.css",
+    "static/js/2.94bc72ef.chunk.js",
+    "static/css/main.965f5a57.chunk.css",
+    "static/js/main.47bdc8de.chunk.js"
+  ]
+}
