@@ -1,30 +1,90 @@
 import {
     Get,
+    Post,
     QueryParam,
+    BodyParam,
     Controller,
     UseBefore,
-  } from 'routing-controllers';
-  import { FormatResponse } from '@/app/middlewares/formatResponse';
+} from 'routing-controllers';
+import { FormatResponse } from '@/app/middlewares/formatResponse';
 
-  import { FileService, TableColumnService, riceDataService } from './service'
-  
-  const PICTURES_PATH = '../Crophe/data/pictures';
+import { FileService, TableColumnService, riceDataService } from './service'
 
-  @Controller('/api/crophe')
-  @UseBefore(FormatResponse)
-  export class PermissionController {
-      
+import { getData } from '../data/service';
+
+const PICTURES_PATH = '../Crophe/data/pictures';
+
+@Controller('/api/crophe')
+@UseBefore(FormatResponse)
+export class PermissionController {
+
     constructor(
-        private fileService: FileService, 
-        private tableService: TableColumnService, 
+        private fileService: FileService,
+        private tableService: TableColumnService,
         private riceDataService: riceDataService,
-        ) {}
+    ) { }
 
-      //QzWy
-      @Get('/accessionIdQzWYList')
-      async getAccessionIdQzWyList(
-          @QueryParam('year') year: string,
-      ) {
+    // 获取图片
+    @Post('/getimgdata')
+    async getImgData(
+        @BodyParam('searchData') searchData: any
+    ) {
+        let path: string = '';
+        let notAll: boolean = true;
+        for (let i in searchData) {
+            if (searchData[i] === 'all') {
+                notAll = false;
+                break;
+            }
+            path += `/${searchData[i]}`;
+        }
+
+        if (notAll) {
+            const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
+            const pictures = fileName.reduce((arr, name, index) => {
+                arr.push({
+                    path: `data/pictures${path}`
+                });
+                return arr;
+            }, [] as any);
+            return pictures;
+        } else {
+            const dirName = await this.fileService.getDir(`${PICTURES_PATH}${path}`);
+            let result: any = [];
+            for (let i in dirName) {
+                let fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}/${dirName[i]}`);
+                let pictures = fileName.reduce((arr, name, index) => {
+                    arr.push({
+                        path: `data/pictures${path}`
+                    });
+                    return arr;
+                }, [] as any);
+                result = [...result, ...pictures];
+            }
+            return result;
+        }
+    }
+
+    // 获取数据
+    @Post('/getdatadata')
+    async getDataData(
+        @BodyParam('searchData') searchData: any
+    ) {
+        const filterArr: any = Object.keys(searchData);
+        const data: any = await getData(searchData);
+        for (let i in data[0]) {
+            if (filterArr.includes(i) || typeof data[0][i] === 'object') {
+                delete data[0][i];
+            }
+        }
+        return data;
+    }
+
+    //QzWy
+    @Get('/accessionIdQzWYList')
+    async getAccessionIdQzWyList(
+        @QueryParam('year') year: string,
+    ) {
         const dirName = await this.fileService.getDir(`${PICTURES_PATH}/rice/${year}`)
         const ids = dirName.sort().reduce((arr, name, index) => {
             arr.push({
@@ -32,14 +92,15 @@ import {
             });
             return arr;
         }, [] as any);
-          return ids;
-      }
+        return ids;
+    }
 
-      @Get('/imgQzWyList')
-      async getQzWyImgList(
-          @QueryParam('year') year: string,
-          @QueryParam('id') id: string,
-      ) {
+
+    @Get('/imgQzWyList')
+    async getQzWyImgList(
+        @QueryParam('year') year: string,
+        @QueryParam('id') id: string,
+    ) {
         const fileName = await this.fileService.getFile(`${PICTURES_PATH}/rice/${year}/${id}`)
         const pictures = fileName.reduce((arr, name, index) => {
             arr.push({
@@ -47,16 +108,16 @@ import {
             });
             return arr;
         }, [] as any);
-          return pictures;
-      }
+        return pictures;
+    }
 
-      //RlxWy
-      @Get('/accessionIdRlxWyList')
-      async getAccessionIdRlxWyList(
-          @QueryParam('year') year: string,
-          @QueryParam('condition') condition: string,
-      ) {
-          const handleDrought = async (year: string, condition: string) => {
+    //RlxWy
+    @Get('/accessionIdRlxWyList')
+    async getAccessionIdRlxWyList(
+        @QueryParam('year') year: string,
+        @QueryParam('condition') condition: string,
+    ) {
+        const handleDrought = async (year: string, condition: string) => {
             const path = `${PICTURES_PATH}/rice/drought/${condition}/${condition}_${year}`;
             const defaultPath = `${PICTURES_PATH}/rice/drought/After_recovery/After_recovery_${year}`;
             const dirName = await this.fileService.getDir(condition === "*" || !condition ? defaultPath : path);
@@ -68,7 +129,7 @@ import {
                 });
                 return arr;
             }, [] as any);
-            
+
             const conditionResult = conditionName.reduce((arr, name, index) => {
                 arr.push({
                     value: name,
@@ -76,66 +137,66 @@ import {
                 });
                 return arr;
             }, [] as any);
-            
+
             return {
                 id: ids,
                 condition: [{
                     value: '*',
                     name: 'all'
-                }].concat(conditionResult) 
+                }].concat(conditionResult)
             };
-          };
+        };
 
-          const handleWue = async (year: string) => {
-              const path = `${PICTURES_PATH}/rice/wue/${year}`;
-              const dirName = await this.fileService.getDir(path);
+        const handleWue = async (year: string) => {
+            const path = `${PICTURES_PATH}/rice/wue/${year}`;
+            const dirName = await this.fileService.getDir(path);
 
-              const growStage = [
+            const growStage = [
                 {
                     value: '*',
                     name: 'all'
                 }];
 
-                for(let i = 1; i <= 30; i++) {
-                    growStage.push({
-                        value: String(i),
-                        name: String(i)
-                    })
-                }
+            for (let i = 1; i <= 30; i++) {
+                growStage.push({
+                    value: String(i),
+                    name: String(i)
+                })
+            }
 
-              const conditionResult = [
+            const conditionResult = [
                 {
                     value: '*',
                     name: 'all'
-                },{
+                }, {
                     value: 'W1',
                     name: 'W1'
-                },{
+                }, {
                     value: 'W2',
                     name: 'W2'
-                },{
+                }, {
                     value: 'N1',
                     name: 'N1'
-                },{
+                }, {
                     value: 'N2',
                     name: 'N2'
                 }];
 
-              const ids = dirName.sort().reduce((arr, name, index) => {
+            const ids = dirName.sort().reduce((arr, name, index) => {
                 arr.push({
                     id: name
                 });
                 return arr;
             }, [] as any);
-            
+
             return {
                 id: ids,
                 condition: conditionResult,
                 growStage
             };
-          };
+        };
 
-          const handlePlot = async (year: string) => {
+        const handlePlot = async (year: string) => {
             const dirName = await this.fileService.getDir(`${PICTURES_PATH}/rice/plot/${year}`)
             const ids = dirName.sort().reduce((arr, name, index) => {
                 arr.push({
@@ -143,12 +204,12 @@ import {
                 });
                 return arr;
             }, [] as any);
-              return {
-                  id: ids
-              };
-          };
+            return {
+                id: ids
+            };
+        };
 
-          const handleTiller = async (year: string) => {
+        const handleTiller = async (year: string) => {
             const dirName = await this.fileService.getDir(`${PICTURES_PATH}/rice/tiller/${year}`)
             const ids = dirName.sort().reduce((arr, name, index) => {
                 arr.push({
@@ -156,36 +217,36 @@ import {
                 });
                 return arr;
             }, [] as any);
-              return {
-                  id: ids
-              };
-          };
+            return {
+                id: ids
+            };
+        };
 
-          switch(year) {
-              case '2016-drought':
-              case '2013-drought':
+        switch (year) {
+            case '2016-drought':
+            case '2013-drought':
                 return handleDrought(year, condition);
-              case '2013-WUE':
-              case '2014-WUE':
-                  return handleWue(year);
-              case '2015-tiller':
-                  return handleTiller(year);
-              case '2016-plot':
-                  return handlePlot(year);
-              default: 
-                  return null;
-          }
-      }
+            case '2013-WUE':
+            case '2014-WUE':
+                return handleWue(year);
+            case '2015-tiller':
+                return handleTiller(year);
+            case '2016-plot':
+                return handlePlot(year);
+            default:
+                return null;
+        }
+    }
 
-      @Get('/imgRlxWyList')
-      async getImgRlxWyList(
-          @QueryParam('year') year: string,
-          @QueryParam('condition') condition: string,
-          @QueryParam('id') id: string,
-          @QueryParam('growStage') growStage: string,
-      ) {
-          const handleDrought = async (year: string, condition: string) => {
-              if(condition === "*") {
+    @Get('/imgRlxWyList')
+    async getImgRlxWyList(
+        @QueryParam('year') year: string,
+        @QueryParam('condition') condition: string,
+        @QueryParam('id') id: string,
+        @QueryParam('growStage') growStage: string,
+    ) {
+        const handleDrought = async (year: string, condition: string) => {
+            if (condition === "*") {
                 const path_before_stress = `${PICTURES_PATH}/rice/drought/Before_stress/Before_stress_${year}/${id}`;
                 const path_after_stress = `${PICTURES_PATH}/rice/drought/After_stress/After_stress_${year}/${id}`;
                 const path_after_recovery = `${PICTURES_PATH}/rice/drought/After_recovery/After_recovery_${year}/${id}`;
@@ -216,20 +277,20 @@ import {
 
                 return [...picturesBeforeStress, ...picturesAfterStress, ...picturesAfterRecovery];
 
-              } else {
+            } else {
                 const path = `${PICTURES_PATH}/rice/drought/${condition}/${condition}_${year}/${id}`;
                 const fileName = await this.fileService.getFile(path);
                 const pictures = fileName.reduce((arr, name, index) => {
-                  arr.push({
-                      path: `data/pictures/rice/drought/${condition}/${condition}_${year}/${id}/${name}`
-                  });
-                  return arr;
-              }, [] as any);
+                    arr.push({
+                        path: `data/pictures/rice/drought/${condition}/${condition}_${year}/${id}/${name}`
+                    });
+                    return arr;
+                }, [] as any);
                 return pictures;
-              }
-          };
+            }
+        };
 
-          const handleWue = async (year: string) => {
+        const handleWue = async (year: string) => {
             const path = `${PICTURES_PATH}/rice/wue/${year}/${id}`;
 
             const fileName = await this.fileService.getFile(path);
@@ -238,9 +299,9 @@ import {
                 const prefix = name.split('.')[0];
                 const id_condition = prefix.split('_')[0];
                 const grow_stage = prefix.split('_')[1];
-                if(condition === "*" && growStage === "*") {
+                if (condition === "*" && growStage === "*") {
                     return true;
-                } else if(condition !== "*" && growStage === "*") {
+                } else if (condition !== "*" && growStage === "*") {
                     return `${id}${condition}` === id_condition;
                 } else if (condition === "*" && growStage !== "*") {
                     return growStage === grow_stage;
@@ -254,10 +315,10 @@ import {
                 });
                 return arr;
             }, [] as any);
-                return pictures;                
-          };
+            return pictures;
+        };
 
-          const handlePlot = async (year: string) => {
+        const handlePlot = async (year: string) => {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}/rice/plot/${year}/${id}`)
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
@@ -265,10 +326,10 @@ import {
                 });
                 return arr;
             }, [] as any);
-              return pictures;
-          };
+            return pictures;
+        };
 
-          const handleTiller = async (year: string) => {
+        const handleTiller = async (year: string) => {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}/rice/tiller/${year}/${id}`)
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
@@ -276,30 +337,30 @@ import {
                 });
                 return arr;
             }, [] as any);
-              return pictures;
-          };
+            return pictures;
+        };
 
-          switch(year) {
-              case '2016-drought':
-              case '2013-drought':
+        switch (year) {
+            case '2016-drought':
+            case '2013-drought':
                 return handleDrought(year, condition);
-              case '2013-WUE':
-              case '2014-WUE':
-                  return handleWue(year);
-              case '2015-tiller':
-                  return handleTiller(year);
-              case '2016-plot':
-                  return handlePlot(year);
-              default: 
-                  return handleDrought(year, condition);
-          }
-      }
+            case '2013-WUE':
+            case '2014-WUE':
+                return handleWue(year);
+            case '2015-tiller':
+                return handleTiller(year);
+            case '2016-plot':
+                return handlePlot(year);
+            default:
+                return handleDrought(year, condition);
+        }
+    }
 
-      //data
-      @Get('/riceDataId')
-      async getRiceDataId (
+    //data
+    @Get('/riceDataId')
+    async getRiceDataId(
         @QueryParam('year') year: string
-      ) {
+    ) {
         const year_table_map = {
             '2016-drought': 'phenotypic data_2016',
             '2013-drought': 'phenotypic data 2013',
@@ -313,9 +374,9 @@ import {
 
             let columns = await this.tableService.getColumn({
                 select: ['COLUMN_NAME'],
-                where: {TABLE_NAME: year_table_map[year]}
+                where: { TABLE_NAME: year_table_map[year] }
             });
-            let id = await this.riceDataService.getDrought2013Id({select:['Phenotype ID']})
+            let id = await this.riceDataService.getDrought2013Id({ select: ['Phenotype ID'] })
 
             id = id.reduce((arr, item, index) => {
                 arr.push({
@@ -324,14 +385,14 @@ import {
                 });
                 return arr;
             }, [] as any)
-            
+
             columns = columns.filter((item) => !excludeColumn.includes(item.COLUMN_NAME)).reduce((arr, trait, index) => {
                 arr.push({
                     value: trait.COLUMN_NAME,
                     name: trait.COLUMN_NAME
                 });
                 return arr;
-            }, [{value: '*', name: 'all'}] as any);
+            }, [{ value: '*', name: 'all' }] as any);
 
             return {
                 id,
@@ -344,10 +405,10 @@ import {
 
             let columns = await this.tableService.getColumn({
                 select: ['COLUMN_NAME'],
-                where: {TABLE_NAME: year_table_map[year]}
+                where: { TABLE_NAME: year_table_map[year] }
             });
 
-            let id = await this.riceDataService.getDrought2016Id({select:['Accession_2013ID']});
+            let id = await this.riceDataService.getDrought2016Id({ select: ['Accession_2013ID'] });
 
             id = id.reduce((arr, item, index) => {
                 arr.push({
@@ -363,7 +424,7 @@ import {
                     name: trait.COLUMN_NAME
                 });
                 return arr;
-            }, [{value: '*', name: 'all'}] as any);
+            }, [{ value: '*', name: 'all' }] as any);
 
 
             return {
@@ -372,12 +433,12 @@ import {
             };
         };
 
-        const handleWue = async (year: string) => {    
+        const handleWue = async (year: string) => {
             const excludeColumn = ['dyear', 'num_id', 'Growth_stage'];
 
             let columns = await this.tableService.getColumn({
                 select: ['COLUMN_NAME'],
-                where: {TABLE_NAME: year_table_map[year]}
+                where: { TABLE_NAME: year_table_map[year] }
             });
 
             columns = columns.filter((item) => !excludeColumn.includes(item.COLUMN_NAME)).reduce((arr, trait, index) => {
@@ -386,9 +447,9 @@ import {
                     name: trait.COLUMN_NAME
                 });
                 return arr;
-            }, [{value: '*', name: 'all'}] as any);
+            }, [{ value: '*', name: 'all' }] as any);
 
-            let id = await this.riceDataService.getWueId({aliasName: 'wue', distinctName: 'num_id', year});
+            let id = await this.riceDataService.getWueId({ aliasName: 'wue', distinctName: 'num_id', year });
             id = id.reduce((arr, trait, index) => {
                 arr.push({
                     value: trait.num_id,
@@ -397,15 +458,15 @@ import {
                 return arr;
             }, [] as any);
 
-            let growStage = await this.riceDataService.getWueId({aliasName: 'wue', distinctName: 'Growth_stage', year});
+            let growStage = await this.riceDataService.getWueId({ aliasName: 'wue', distinctName: 'Growth_stage', year });
             growStage = growStage.reduce((arr, trait, index) => {
                 arr.push({
                     value: trait.Growth_stage,
                     name: trait.Growth_stage
                 });
                 return arr;
-            }, [{value: 0, name: 'all'}] as any);
-            
+            }, [{ value: 0, name: 'all' }] as any);
+
             return {
                 id,
                 growStage,
@@ -418,7 +479,7 @@ import {
 
             let columns = await this.tableService.getColumn({
                 select: ['COLUMN_NAME'],
-                where: {TABLE_NAME: year_table_map[year]}
+                where: { TABLE_NAME: year_table_map[year] }
             });
 
             columns = columns.filter((item) => !excludeColumn.includes(item.COLUMN_NAME)).reduce((arr, trait, index) => {
@@ -427,10 +488,10 @@ import {
                     name: trait.COLUMN_NAME
                 });
                 return arr;
-            }, [{value: '*', name: 'all'}] as any);
+            }, [{ value: '*', name: 'all' }] as any);
 
             let id = await this.riceDataService.getTillerId({
-                where:{year}
+                where: { year }
             });
             id = id.reduce((arr, trait, index) => {
                 arr.push({
@@ -446,41 +507,41 @@ import {
             }
         };
 
-        switch(year) {
+        switch (year) {
             case '2013-drought':
-              return handleDrought2013(year);
+                return handleDrought2013(year);
             case '2016-drought':
-              return handleDrought2016(year);
+                return handleDrought2016(year);
             case '2013-WUE':
             case '2014-WUE':
                 return handleWue(year);
             case '2015-tiller':
                 return handleTiller(year);
-            default: 
+            default:
                 return handleDrought2013(year);
         }
-      }
+    }
 
-      @Get('/riceData')
-      async getRiceData (
+    @Get('/riceData')
+    async getRiceData(
         @QueryParam('year') year: string,
         @QueryParam('id') id: string,
         @QueryParam('growStage') growStage: number,
         @QueryParam('trait') trait: string
-      ) {
-        
-        const handleDrought2013 = async (id:string, trait:string) => {
+    ) {
+
+        const handleDrought2013 = async (id: string, trait: string) => {
             const excludeFiled = ['drought_year', 'Phenotype ID', 'Corresponding genotype ID'];
 
             let data = await this.riceDataService.getDrought2013Data({
-                id, 
+                id,
                 trait,
                 aliasName: 'rice'
             });
 
             data = data.reduce((arr, item) => {
-                const result = Object.keys(item).reduce((obj:any, key:any) => {
-                    if(!excludeFiled.includes(key)) {
+                const result = Object.keys(item).reduce((obj: any, key: any) => {
+                    if (!excludeFiled.includes(key)) {
                         obj[key] = item[key];
                     }
                     return obj;
@@ -491,18 +552,18 @@ import {
             return data;
         }
 
-        const handleDrought2016 = async (id:string, trait:string) => {
+        const handleDrought2016 = async (id: string, trait: string) => {
             const excludeFiled = ['Accession_2013ID', 'drought_year'];
 
             let data = await this.riceDataService.getDrought2016Data({
-                id, 
+                id,
                 trait,
                 aliasName: 'rice'
             });
 
             data = data.reduce((arr, item) => {
-                const result = Object.keys(item).reduce((obj:any, key:any) => {
-                    if(!excludeFiled.includes(key)) {
+                const result = Object.keys(item).reduce((obj: any, key: any) => {
+                    if (!excludeFiled.includes(key)) {
                         obj[key] = item[key];
                     }
                     return obj;
@@ -513,11 +574,11 @@ import {
             return data;
         }
 
-        const handleWue = async (id:string, trait:string, growStage:number, year:string) => {
+        const handleWue = async (id: string, trait: string, growStage: number, year: string) => {
             const excludeFiled = ['dyear', 'num_id'];
 
             let data = await this.riceDataService.getWueData({
-                id, 
+                id,
                 trait,
                 year,
                 growStage,
@@ -525,8 +586,8 @@ import {
             });
 
             data = data.reduce((arr, item) => {
-                const result = Object.keys(item).reduce((obj:any, key:any) => {
-                    if(!excludeFiled.includes(key)) {
+                const result = Object.keys(item).reduce((obj: any, key: any) => {
+                    if (!excludeFiled.includes(key)) {
                         obj[key] = item[key];
                     }
                     return obj;
@@ -537,18 +598,18 @@ import {
             return data;
         }
 
-        const handleTiller = async (id:string, trait:string) => {
+        const handleTiller = async (id: string, trait: string) => {
             const excludeFiled = ['year', 'number'];
 
             let data = await this.riceDataService.getTillerData({
-                id, 
+                id,
                 trait,
                 aliasName: 'rice'
             });
 
             data = data.reduce((arr, item) => {
-                const result = Object.keys(item).reduce((obj:any, key:any) => {
-                    if(!excludeFiled.includes(key)) {
+                const result = Object.keys(item).reduce((obj: any, key: any) => {
+                    if (!excludeFiled.includes(key)) {
                         obj[key] = item[key];
                     }
                     return obj;
@@ -559,18 +620,18 @@ import {
             return data;
         }
 
-        switch(year) {
+        switch (year) {
             case '2013-drought':
-              return handleDrought2013(id, trait);
+                return handleDrought2013(id, trait);
             case '2016-drought':
-              return handleDrought2016(id, trait);
+                return handleDrought2016(id, trait);
             case '2013-WUE':
             case '2014-WUE':
                 return handleWue(id, trait, growStage, year);
             case '2015-tiller':
                 return handleTiller(id, trait);
-            default: 
+            default:
                 return handleDrought2013(id, trait);
         }
-      }
-  }
+    }
+}
