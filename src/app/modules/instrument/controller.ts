@@ -2,6 +2,9 @@ import {
     Get,
     QueryParam,
     Controller,
+    Post,
+    Delete,
+    BodyParam,
     UseBefore
   } from 'routing-controllers';
   import { FormatResponse } from '@/app/middlewares/formatResponse';
@@ -82,5 +85,52 @@ import {
           default:
             return await zhResult();
        }
+      }
+
+      @Post('/instrument')
+      async addInstrument(
+        @BodyParam('name') name:String,
+        @BodyParam('content') content:String,
+        @BodyParam('lan') lan:String
+      ){
+        const zhResult = async ()=>{
+          const  result  = await this.instrumentService.addInstrument({name,content});
+          return result;
+        }
+        const enResult = async ()=>{
+          const  result  = await this.instrumentService.addENInstrument({name,content});
+          return result;
+        }
+        switch(lan){
+          case LANGUAGE.zh:
+              return await zhResult();
+          case LANGUAGE.en:
+              return await enResult();
+          default:
+              return await zhResult();
+        }
+      }
+
+      @Delete('/instrument')
+      async deleteNews(
+        @BodyParam('id') id:number,
+        @BodyParam('lan') lan:string
+      ){
+        const zhResult = async ()=>{
+          const result = await this.instrumentService.deleteInstrument({id});
+          return result;
+        }
+        const enResult = async ()=>{
+          const result = await this.instrumentService.deleteENInstrument({id});
+          return result;
+        }
+        switch(lan){
+          case LANGUAGE.zh:
+              return await zhResult();
+          case LANGUAGE.en:
+              return await enResult();
+          default:
+              return await zhResult();
+        }
       }
   }

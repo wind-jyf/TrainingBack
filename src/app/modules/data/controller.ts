@@ -80,25 +80,27 @@ export class CategoryController {
     }
 
 
-    @Get('/addDataCategory')
-    async addDataCategory() {
-        const condition = {
-            type: 'rice',
-            Year_item: '2013-drought',
-            note: 'welcome to HZAU!',
-            key_name: 'Trait',
-            key_type: 'all,E,F1,F2,F3',
-            category_name1: 'Accession_ID',
-            category_name2: null,
-            category_name3: null,
-            category_name4: null,
-            category_name5: null,
-            category_name6: null,
-            category_name7: null,
-            category_name8: null,
-            category_name9: null,
-            category_name10: null,
-        };
+    @Post('/addDataCategory')
+    async addDataCategory(
+        @BodyParam('condition') condition: object
+    ) {
+        /*         const condition = {
+                    type: 'rice',
+                    Year_item: '2013-drought',
+                    note: 'welcome to HZAU!',
+                    key_name: 'Trait',
+                    key_type: 'all,E,F1,F2,F3',
+                    category_name1: 'Accession_ID',
+                    category_name2: null,
+                    category_name3: null,
+                    category_name4: null,
+                    category_name5: null,
+                    category_name6: null,
+                    category_name7: null,
+                    category_name8: null,
+                    category_name9: null,
+                    category_name10: null,
+                }; */
         const result = await this.categoryService.createDataCategory(condition);
         return result;
     }

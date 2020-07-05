@@ -2,6 +2,10 @@ import {
     Get,
     QueryParam,
     Controller,
+    Post,
+    Delete,
+    UploadedFile,
+    BodyParam,
     UseBefore
   } from 'routing-controllers';
   import { FormatResponse } from '@/app/middlewares/formatResponse';
@@ -38,4 +42,23 @@ import {
             pagination: paginationUtils.getResponse(total, page, pageSize)
           };
       }
+
+    @Post('/article')
+    async addArticle(
+      @BodyParam('name') name:string,
+      @BodyParam('date') date:string,
+      @BodyParam('lan') language:string,
+      @UploadedFile('file') file:any
+    ){
+      const result = await this.articleService.addArticle({name,date,language,file})
+      return result;
+    }
+
+    @Delete('/article')
+    async deleteArticle(
+      @BodyParam('id') id:number
+    ){
+      const result = await this.articleService.deleteArticle({id});
+      return result
+    }
   }

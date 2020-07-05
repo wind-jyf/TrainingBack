@@ -25,7 +25,7 @@ import {
       ) {
 
           const result = await this.userService.getUser({username, password});
-
+ 
           if (result.length === 0) {
             throw '账号或密码错误';
           }
