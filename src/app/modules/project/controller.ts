@@ -2,6 +2,10 @@ import {
     Get,
     QueryParam,
     Controller,
+    Post,
+    Put,
+    Delete,
+    BodyParam,
     UseBefore
   } from 'routing-controllers';
   import { FormatResponse } from '@/app/middlewares/formatResponse';
@@ -25,5 +29,31 @@ import {
             projectList,
             pagination: paginationUtils.getResponse(total, page, pageSize)
           };
+      }
+
+      @Post('/projec')
+      async addProject(
+        @BodyParam('projectname') projectname?:String
+      ){
+        const result = await this.projectService.addProject({projectname});
+        return result;
+      }
+
+      @Put('/projec')
+      async updateProject(
+        @BodyParam('projectname') projectname?:String,
+        @BodyParam('id') id?:number
+      ){
+        const result = await this.projectService.updateProject({projectname});
+        return result;
+      }
+
+      @Delete('/projec')
+      async deleteProject(
+        @BodyParam('id') id?:number
+      ){
+          const [ projects ] = await this.projectService.getProjectById({id});
+          const result = await this.projectService.deleteProject({...projects});
+          return result;
       }
   }

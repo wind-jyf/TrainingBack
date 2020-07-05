@@ -48,3 +48,29 @@ export class NewsEntity {
   })
   public click_rate!: string;
 }
+
+@Entity({
+  name:'aboutcpc'
+})
+export class NewsENEntity {
+  @PrimaryGeneratedColumn({
+    name: 'id',
+    type: 'int',
+    unsigned: true
+  })
+  public id!: number;
+
+  @Column({
+    name: 'title',
+    type: 'varchar',
+    width: 255,
+    nullable: true
+  })
+  public name!: string;
+  @Column({
+    name: 'content',
+    type: 'longtext',
+    nullable: true
+  })
+  public content!: string;
+}
