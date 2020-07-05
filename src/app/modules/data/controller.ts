@@ -79,12 +79,32 @@ export class CategoryController {
         return data;
     }
 
+    /**
+     * 管理员对数据、图片目录表的增删改查
+     */
+
+    @Post('/getCategory')
+    async getCategory(
+        @BodyParam('condition') condition: object
+    ) {
+        //const condition = { type: 'rice' };
+        const dataCategory = await this.categoryService.getDataCategory(condition);
+        const imgCategory = await this.categoryService.getImageCategory(condition);
+        const result = {
+            data: dataCategory,
+            image: imgCategory
+        }
+        return result;
+    }
+
 
     @Post('/addDataCategory')
     async addDataCategory(
-        @BodyParam('condition') condition: object
+        @BodyParam('condition') condition: any
     ) {
-        /*         const condition = {
+        /*  两个添加的示例数据
+                 const condition = {
+                    id: '',
                     type: 'rice',
                     Year_item: '2013-drought',
                     note: 'welcome to HZAU!',
@@ -101,7 +121,76 @@ export class CategoryController {
                     category_name9: null,
                     category_name10: null,
                 }; */
+        if (!condition.id) delete condition.id;
         const result = await this.categoryService.createDataCategory(condition);
+        return result;
+    }
+
+    @Post('/addImgCategory')
+    async addImgCategory(
+        @BodyParam('condition') condition: any
+    ) {
+        if (!condition.id) delete condition.id;
+        const result = await this.categoryService.createImageCategory(condition);
+        return result;
+    }
+
+    @Post('/deleteDataCategory')
+    async deleteDataCategory(
+        @BodyParam('condition') condition: object
+    ) {
+        // 删除的示例参数
+        // const condition = { id: 2 }
+        const result = await this.categoryService.deleteDataCategory(condition);
+        return result;
+    }
+
+    @Post('/deleteImgCategory')
+    async deleteImgCategory(
+        @BodyParam('condition') condition: object
+    ) {
+        const result = await this.categoryService.deleteImageCategory(condition);
+        return result;
+    }
+
+    @Post('/updateDataCategory')
+    async updateDataCategory(
+        @BodyParam('condition') condition: any
+    ) {
+        /*         两个修改的示例数据
+                const condition = {
+                    id: 1,
+                    type: 'rice',
+                    Year_item: '2013-drought',
+                    note: 'welcome to HZAU!',
+                    key_name: 'Trait',
+                    key_type: 'all,E,F1,F2,F3',
+                    category_name1: 'Accession_ID',
+                    category_name2: 'chang_ID',
+                    category_name3: 'liu_ID',
+                    category_name4: null,
+                    category_name5: null,
+                    category_name6: null,
+                    category_name7: null,
+                    category_name8: null,
+                    category_name9: null,
+                    category_name10: null,
+                }; */
+        const { id } = condition;
+        const idObj = { id };
+        delete condition.id;
+        const result = await this.categoryService.updateDataCategory(idObj, condition);
+        return result;
+    }
+
+    @Post('/updateImgCategory')
+    async updateImgCategory(
+        @BodyParam('condition') condition: any
+    ) {
+        const { id } = condition;
+        const idObj = { id };
+        delete condition.id;
+        const result = await this.categoryService.updateImageCategory(idObj, condition);
         return result;
     }
 

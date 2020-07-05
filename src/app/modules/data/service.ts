@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { getConnection } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 import { DataEntity, ImgEntity } from './entity';
 import { isProduction } from '@/constants';
 
@@ -9,12 +9,71 @@ const connection = mysql.createConnection(config);
 
 @Service()
 export class CategoryService {
+    async getDataCategory(type: any) {
+        return await getRepository(DataEntity)
+            .createQueryBuilder("data")
+            .where("data.type = :type", type)
+            .getMany();
+    }
+
+    async getImageCategory(type: any) {
+        return await getRepository(ImgEntity)
+            .createQueryBuilder("img")
+            .where("img.type = :type", type)
+            .getMany();
+    }
+
     async createDataCategory(conditions: any) {
-        return getConnection()
+        return await getConnection()
             .createQueryBuilder()
             .insert()
             .into(DataEntity)
             .values(conditions)
+            .execute();
+    }
+
+    async createImageCategory(conditions: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into(ImgEntity)
+            .values(conditions)
+            .execute();
+    }
+
+    async deleteDataCategory(id: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(DataEntity)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async deleteImageCategory(id: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(ImgEntity)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async updateDataCategory(id: any, conditions: any) {
+        return await await getConnection()
+            .createQueryBuilder()
+            .update(DataEntity)
+            .set(conditions)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async updateImageCategory(id: any, conditions: any) {
+        return await await getConnection()
+            .createQueryBuilder()
+            .update(ImgEntity)
+            .set(conditions)
+            .where("id = :id", id)
             .execute();
     }
 }
