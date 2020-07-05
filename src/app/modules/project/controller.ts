@@ -48,7 +48,7 @@ import {
         return result;
       }
 
-      @Delete('/projec')
+      @Delete('/project')
       async deleteProject(
         @BodyParam('id') id?:number
       ){
