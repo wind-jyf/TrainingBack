@@ -6,7 +6,10 @@ import {
   } from 'routing-controllers';
   import { FormatResponse } from '@/app/middlewares/formatResponse';
 
-  import { FileService } from '../rice/service'
+  import { FileService } from '../rice/service';
+  import { CottonService } from './service';
+
+  
   
   const PICTURES_PATH = '../Crophe/data/pictures';
 
@@ -16,6 +19,7 @@ import {
       
     constructor(
         private fileService: FileService,
+        private cottonService: CottonService
         ) {}
 
       @Get('/accessionIdCottonList')
@@ -83,5 +87,11 @@ import {
               return arr;
           }, [] as any);
             return pictures;
+      }
+      @Get('/cottonData')
+      async getCottonData(
+          @QueryParam('Year_item') Year_item :string
+      ){
+          
       }
   }
