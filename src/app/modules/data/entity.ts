@@ -262,3 +262,39 @@ export class ImgEntity {
     })
     public category_name10!: string;
 }
+
+@Entity({
+    name: 'data'
+})
+export class FileEntity {
+    @PrimaryGeneratedColumn({
+        name: 'id',
+        type: 'int',
+        unsigned: true
+    })
+    public id!: number;
+
+    @Column({
+        name: 'name',
+        type: 'varchar',
+        width: 255,
+        nullable: false
+    })
+    public name!: string;
+
+    @Column({
+        name: 'path',
+        type: 'varchar',
+        width: 255,
+        nullable: false
+    })
+    public path!: string;
+
+    @Column({
+        name: 'date',
+        type: 'varchar',
+        width: 255,
+        nullable: false
+    })
+    public date!: string;
+}

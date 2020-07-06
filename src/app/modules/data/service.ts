@@ -1,11 +1,14 @@
 import { Service } from 'typedi';
 import { getConnection, getRepository } from 'typeorm';
-import { DataEntity, ImgEntity } from './entity';
+import { DataEntity, ImgEntity, FileEntity } from './entity';
 import { isProduction } from '@/constants';
-
+import { objectUtils } from '@/utils';
+const fs = require('fs');
 const mysql = require('mysql');
 const config = isProduction ? require('../../../config/proconfig') : require('../../../config/devconfig');
 const connection = mysql.createConnection(config);
+
+const DATA_PATH = '../Crophe/';
 
 @Service()
 export class CategoryService {
@@ -60,7 +63,7 @@ export class CategoryService {
     }
 
     async updateDataCategory(id: any, conditions: any) {
-        return await await getConnection()
+        return await getConnection()
             .createQueryBuilder()
             .update(DataEntity)
             .set(conditions)
@@ -69,11 +72,88 @@ export class CategoryService {
     }
 
     async updateImageCategory(id: any, conditions: any) {
-        return await await getConnection()
+        return await getConnection()
             .createQueryBuilder()
             .update(ImgEntity)
             .set(conditions)
             .where("id = :id", id)
+            .execute();
+    }
+
+}
+
+@Service()
+export class FileService {
+    async getDir(path: string) {
+        const dir = await fs.promises.opendir(path);
+        const dirName = [];
+
+        for await (const dirent of dir) {
+            if (dirent.isDirectory()) {
+                dirName.push(dirent.name);
+            }
+        }
+        return dirName;
+    }
+
+    async getFile(path: string) {
+        const dir = await fs.promises.opendir(path);
+        const fileName = [];
+
+        for await (const dirent of dir) {
+            if (dirent.isFile()) {
+                fileName.push(dirent.name);
+            }
+        }
+        return fileName;
+    }
+
+    async getFileList(conditions: any, pagination?: any) {
+        return await getRepository(FileEntity)
+            .findAndCount(objectUtils.clean({
+                ...conditions,
+                ...pagination
+            }))
+    }
+
+    async uploadFile(conditions: any) {
+        const { name, date, file } = conditions;
+        const value = {
+            name,
+            path: `data/${file.originalname}`,
+            date,
+        }
+        await fs.writeFile(`${DATA_PATH}${file.originalname}`, file.buffer, (err: any) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                console.log('写入成功');
+            }
+        })
+        return await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into(FileEntity)
+            .values(value)
+            .execute();
+    }
+
+    async deleteFile(conditions: any) {
+        const { id, path } = conditions;
+        const arr = path.split('/');
+        const name = arr[arr.length - 1];
+        await fs.unlink(`${DATA_PATH}${name}`, (err: any) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                console.log('删除成功');
+            }
+        })
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(FileEntity)
+            .where("id = :id", { id })
             .execute();
     }
 }

@@ -4,15 +4,16 @@ import {
     QueryParam,
     BodyParam,
     Controller,
-    UseBefore
+    UseBefore,
+    UploadedFile
 } from 'routing-controllers';
 import { FormatResponse } from '@/app/middlewares/formatResponse';
 
-import { CategoryService } from './service';
-import { FileService } from '../rice/service';
+import { CategoryService, FileService } from './service';
 import { getData } from './service';
+import { paginationUtils } from '@/utils';
 
-const PICTURES_PATH = '../Crophe/data/pictures';
+const PICTURES_PATH = '../Crophe/data/pictures-new';
 
 @Controller('/api/crophe')
 @UseBefore(FormatResponse)
@@ -194,4 +195,43 @@ export class CategoryController {
         return result;
     }
 
+    /**
+     * 下载、上传、删除文件
+     */
+
+    @Get('/getdownloadlist')
+    async getFileList(
+        @QueryParam('page_size') pageSize?: number,
+        @QueryParam('page') page?: number
+    ) {
+        const [fileList, total] = await this.fileService.getFileList({
+            select: ['id', 'name', 'path', 'date'],
+            order: { id: 'DESC' }
+        },
+            paginationUtils.getCondition(page, pageSize)
+        );
+        return {
+            fileList,
+            pagination: paginationUtils.getResponse(total, page, pageSize)
+        }
+    }
+
+    @Post('/uploadfile')
+    async uploadFile(
+        @BodyParam('name') name: string,
+        @BodyParam('date') date: string,
+        @UploadedFile('file') file: any
+    ) {
+        const result = await this.fileService.uploadFile({ name, date, file });
+        return result;
+    }
+
+    @Get('/deletefile')
+    async deleteFile(
+        @QueryParam('id') id: number,
+        @QueryParam('path') path: string
+    ) {
+        const result = await this.fileService.deleteFile({ id, path });
+        return result;
+    }
 }
