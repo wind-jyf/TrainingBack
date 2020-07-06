@@ -10,8 +10,6 @@ import { FormatResponse } from '@/app/middlewares/formatResponse';
 
 import { FileService, TableColumnService, riceDataService } from './service'
 
-import { getData } from '../data/service';
-
 const PICTURES_PATH = '../Crophe/data/pictures';
 
 @Controller('/api/crophe')
@@ -23,62 +21,6 @@ export class PermissionController {
         private tableService: TableColumnService,
         private riceDataService: riceDataService,
     ) { }
-
-    // 获取图片
-    @Post('/getimgdata')
-    async getImgData(
-        @BodyParam('searchData') searchData: any
-    ) {
-        let path: string = '';
-        let notAll: boolean = true;
-        for (let i in searchData) {
-            if (searchData[i] === 'all') {
-                notAll = false;
-                break;
-            }
-            path += `/${searchData[i]}`;
-        }
-
-        if (notAll) {
-            const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
-            const pictures = fileName.reduce((arr, name, index) => {
-                arr.push({
-                    path: `data/pictures${path}`
-                });
-                return arr;
-            }, [] as any);
-            return pictures;
-        } else {
-            const dirName = await this.fileService.getDir(`${PICTURES_PATH}${path}`);
-            let result: any = [];
-            for (let i in dirName) {
-                let fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}/${dirName[i]}`);
-                let pictures = fileName.reduce((arr, name, index) => {
-                    arr.push({
-                        path: `data/pictures${path}`
-                    });
-                    return arr;
-                }, [] as any);
-                result = [...result, ...pictures];
-            }
-            return result;
-        }
-    }
-
-    // 获取数据
-    @Post('/getdatadata')
-    async getDataData(
-        @BodyParam('searchData') searchData: any
-    ) {
-        const filterArr: any = Object.keys(searchData);
-        const data: any = await getData(searchData);
-        for (let i in data[0]) {
-            if (filterArr.includes(i) || typeof data[0][i] === 'object') {
-                delete data[0][i];
-            }
-        }
-        return data;
-    }
 
     //QzWy
     @Get('/accessionIdQzWYList')
