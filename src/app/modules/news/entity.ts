@@ -8,6 +8,33 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({
+  name:'aboutcpc'
+})
+export class NewsENEntity {
+  @PrimaryGeneratedColumn({
+    name: 'id',
+    type: 'int',
+    unsigned: true
+  })
+  public id!: number;
+
+  @Column({
+    name: 'title',
+    type: 'varchar',
+    width: 255,
+    nullable: true
+  })
+  public title!: string;
+  
+  @Column({
+    name: 'content',
+    type: 'longtext',
+    nullable: true
+  })
+  public content!: string;
+}
+
+@Entity({
   name: 'newslist'
 })
 export class NewsEntity {
@@ -49,28 +76,4 @@ export class NewsEntity {
   public click_rate!: string;
 }
 
-@Entity({
-  name:'aboutcpc'
-})
-export class NewsENEntity {
-  @PrimaryGeneratedColumn({
-    name: 'id',
-    type: 'int',
-    unsigned: true
-  })
-  public id!: number;
 
-  @Column({
-    name: 'title',
-    type: 'varchar',
-    width: 255,
-    nullable: true
-  })
-  public title!: string;
-  @Column({
-    name: 'content',
-    type: 'longtext',
-    nullable: true
-  })
-  public content!: string;
-}

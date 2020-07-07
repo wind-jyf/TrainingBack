@@ -10,7 +10,7 @@ import { beforeStart } from '@/beforeStart';
 import { sessionMiddleware } from '@/app/middlewares/session';
 import { staticMiddleware } from '@/app/middlewares/static';
 import { templateMiddleware } from '@/app/middlewares/template';
-
+const bodyParser = require('koa-bodyparser');
 async function startKoaServer() {
     useContainer(Container);
   
@@ -23,7 +23,9 @@ async function startKoaServer() {
     staticMiddleware(app,'../Crophe');
     templateMiddleware(app);
     app.use(sessionMiddleware(app));
-
+    app.use(bodyParser({
+      formLimit:"10mb"
+    }))
     app.listen(config.port, config.hostname);
   
     console.log(`starting listening: ${config.hostname}:${config.port}`);

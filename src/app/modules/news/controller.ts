@@ -37,6 +37,7 @@ import { LANGUAGE } from '@/constants';
             );
           return {
             newsList,
+            lan:'中文',
             pagination: paginationUtils.getResponse(total, page, pageSize)
           };
           };
@@ -49,6 +50,7 @@ import { LANGUAGE } from '@/constants';
             );
           return {
             newsList,
+            lan:'英文',
             pagination: paginationUtils.getResponse(total, page, pageSize)
           };
           };
