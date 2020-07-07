@@ -1,4 +1,4 @@
-export const DEV_SERVER_PORT = 8080;
+export const DEV_SERVER_PORT = 8081;
 export const PRO_SERVER_PORT = 3001;
 
 export const DEV_SERVER_HOSTNAME = 'localhost';

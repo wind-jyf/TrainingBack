@@ -44,7 +44,7 @@ export class ProjectController {
     @BodyParam('projectname') projectname?: String,
     @BodyParam('id') id?: number
   ) {
-    const result = await this.projectService.updateProject({ projectname });
+    const result = await this.projectService.updateProject({id, projectname});
     return result;
   }
 
@@ -52,8 +52,7 @@ export class ProjectController {
   async deleteProject(
     @BodyParam('id') id?: number
   ) {
-    const [projects] = await this.projectService.getProjectById({ id });
-    const result = await this.projectService.deleteProject({ ...projects });
+    const result = await this.projectService.deleteProject({id});
     return result;
   }
 }

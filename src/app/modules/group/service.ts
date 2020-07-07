@@ -29,14 +29,16 @@ export class GroupService {
     async addMember(conditions:any){
         try{
             let {name,descripe,avator} = conditions;
-            fs.writeFile(`../Crophe/teacher/${avator.originalname}`,avator.buffer,(err:any)=>{
+            let time = (new Date()).valueOf();
+            let suffix = avator.originalname.split('.').pop();
+            fs.writeFile(`../Crophe/teacher/${time}.${suffix}`,avator.buffer,(err:any)=>{
                 if(err){
                     throw new Error("写入失败" +err)
                 }else{
                     console.log("保存成功")
                 }
             })
-            let img = `teacher/${avator.originalname}`;
+            let img = `teacher/${time}.${suffix}`;
             this.GroupRepository.insert({name,img,descripe});
             return '添加成功'
         }catch(e){
@@ -46,22 +48,43 @@ export class GroupService {
     }
 
     async addENMember(conditions:any){
-        
-    }
-
-    async updateGroup(conditions:any){
         try{
-            console.log(conditions);
-            let {id,name,descripe,avator} = conditions;
-            fs.writeFile(`../Crophe/teacher/${name}`,avator.buffer,(err:any)=>{
+            let {left,foot,content,avator} = conditions;
+            let time = (new Date()).valueOf();
+            let suffix = avator.originalname.split('.').pop();
+            fs.writeFile(`../Crophe/teacher/${time}_e.${suffix}`,avator.buffer,(err:any)=>{
                 if(err){
                     throw new Error("写入失败" +err)
                 }else{
                     console.log("保存成功")
                 }
             })
-            let img = `teacher/${name}`;
-            this.GroupRepository.update(id,{name,img,descripe});
+            let img = `teacher/${time}_e.${suffix}`;
+            this.GroupEnRepository.insert({left,foot,content,img});
+            return '添加成功'
+        }catch(e){
+            throw new Error("添加失败");
+        }
+    }
+
+    async updateGroup(conditions:any){
+        try{
+            let {id,name,descripe,avator} = conditions;
+            if(avator){
+                let time = (new Date()).valueOf();
+                let suffix = avator.originalname.split('.').pop();
+                fs.writeFile(`../Crophe/teacher/${time}.${suffix}`,avator.buffer,(err:any)=>{
+                    if(err){
+                        throw new Error("写入失败" +err)
+                    }else{
+                        console.log("保存成功")
+                    }
+                })
+                let img = `teacher/${time}.${suffix}`;
+                this.GroupRepository.update(id,{name,img,descripe});
+            }else{
+                this.GroupRepository.update(id,{name,descripe});
+            }
             return '更新成功'
         }catch(e){
             throw new Error("更新失败");
@@ -69,7 +92,27 @@ export class GroupService {
     }
 
     async updateEnGroup(conditions:any){
-
+        try{
+            let {id,left,foot,content,avator} = conditions;
+            if(avator){
+                let time = (new Date()).valueOf();
+                let suffix = avator.originalname.split('.').pop();
+                fs.writeFile(`../Crophe/teacher/${time}_e.${suffix}`,avator.buffer,(err:any)=>{
+                    if(err){
+                        throw new Error("写入失败" +err)
+                    }else{
+                        console.log("保存成功")
+                    }
+                })
+                let img = `../Crophe/teacher/${time}_e.${suffix}`;
+                this.GroupEnRepository.update(id,{left,foot,content,img});
+            }else{
+                this.GroupEnRepository.update(id,{left,foot,content});
+            }
+            return '更新成功'
+        }catch(e){
+            throw new Error("更新失败");
+        }
     }
 
     async deleteMember(conditions:any){
@@ -82,6 +125,11 @@ export class GroupService {
     }
 
     async deleteENMember(conditions:any){
-        
+        try{
+            this.GroupEnRepository.remove(conditions);
+            return "删除成功"
+        } catch(e){
+            throw new Error("删除失败")
+        }
     }
 }
