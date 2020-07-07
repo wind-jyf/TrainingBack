@@ -108,19 +108,7 @@ export class CategoryController {
                     id: '',
                     type: 'rice',
                     Year_item: '2013-drought',
-                    note: 'welcome to HZAU!',
-                    key_name: 'Trait',
-                    key_type: 'all,E,F1,F2,F3',
-                    category_name1: 'Accession_ID',
-                    category_name2: null,
-                    category_name3: null,
-                    category_name4: null,
-                    category_name5: null,
-                    category_name6: null,
-                    category_name7: null,
-                    category_name8: null,
-                    category_name9: null,
-                    category_name10: null,
+                    ...
                 }; */
         if (!condition.id) delete condition.id;
         const result = await this.categoryService.createDataCategory(condition);
@@ -158,25 +146,6 @@ export class CategoryController {
     async updateDataCategory(
         @BodyParam('condition') condition: any
     ) {
-        /*         两个修改的示例数据
-                const condition = {
-                    id: 1,
-                    type: 'rice',
-                    Year_item: '2013-drought',
-                    note: 'welcome to HZAU!',
-                    key_name: 'Trait',
-                    key_type: 'all,E,F1,F2,F3',
-                    category_name1: 'Accession_ID',
-                    category_name2: 'chang_ID',
-                    category_name3: 'liu_ID',
-                    category_name4: null,
-                    category_name5: null,
-                    category_name6: null,
-                    category_name7: null,
-                    category_name8: null,
-                    category_name9: null,
-                    category_name10: null,
-                }; */
         const { id } = condition;
         const idObj = { id };
         delete condition.id;

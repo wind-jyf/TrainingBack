@@ -123,7 +123,7 @@ export class FileService {
             path: `data/${file.originalname}`,
             date,
         }
-        await fs.writeFile(`${DATA_PATH}${file.originalname}`, file.buffer, (err: any) => {
+        await fs.writeFile(`${DATA_PATH}data/${file.originalname}`, file.buffer, (err: any) => {
             if (err) {
                 console.log(err.message);
             } else {
@@ -140,9 +140,7 @@ export class FileService {
 
     async deleteFile(conditions: any) {
         const { id, path } = conditions;
-        const arr = path.split('/');
-        const name = arr[arr.length - 1];
-        await fs.unlink(`${DATA_PATH}${name}`, (err: any) => {
+        await fs.unlink(`${DATA_PATH}${path}`, (err: any) => {
             if (err) {
                 console.log(err.message);
             } else {
