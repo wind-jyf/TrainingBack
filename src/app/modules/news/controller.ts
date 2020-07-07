@@ -15,6 +15,7 @@ import {
   import { NewsService } from './service';
   import { LANGUAGE } from '@/constants';
 
+
   @Controller('/api/crophe')
   @UseBefore(FormatResponse)
   export class NewsController {
@@ -42,7 +43,6 @@ import {
           const enResult = async () =>{
             const [newsList, total] = await this.newsService.getENNewsAndCount(
               {
-                select: ['id', 'name', 'date'],
                 order: { id: 'DESC' }
               }, 
               paginationUtils.getCondition(page, pageSize)
@@ -94,7 +94,7 @@ import {
       @Post('/news')
       async addNews(
         @BodyParam('name') name:String,
-        @BodyParam('date') date:Date,
+        @BodyParam('date') date:string,
         @BodyParam('content') content:String,
         @BodyParam('lan') lan:String
       ){
@@ -120,7 +120,7 @@ import {
       async updateNews(
         @BodyParam('id') id:number,
         @BodyParam('name') name:String,
-        @BodyParam('date') date:Date,
+        @BodyParam('date') date:String,
         @BodyParam('content') content:String,
         @BodyParam('lan') lan:String
       ){

@@ -66,7 +66,7 @@ export class NewsENEntity {
     width: 255,
     nullable: true
   })
-  public name!: string;
+  public title!: string;
   @Column({
     name: 'content',
     type: 'longtext',

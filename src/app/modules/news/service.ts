@@ -22,16 +22,19 @@ export class NewsService {
         return this.NewsENRepository.find(objectUtils.clean({ ...conditions }))
     }
     async getImg(content: any){
-        let imgsrc=[];
+        let imgsrc:any=[];
         const str = /<img\b.*?(?:\>|\/>)/gi;
         const str1 = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
         let image = content.match(str);
+        console.log(image)
         
-        if(image.length!=0){
+        if(image){
+            console.log("替换")
             for(let i = 0;i<image.length;i++){
                 imgsrc[i] = image[i].match(str1)[1];
             }
         }
+        
         console.log('okk')
         return imgsrc;
     }
@@ -45,22 +48,23 @@ export class NewsService {
         console.log(conditions);
         try{
             let {name,content} = conditions;
-            let imageStr = await this.getImg(content);
+            let imageStr = [];
+            imageStr = await this.getImg(content);
             let replacestr:any[] = [];
             
             if(imageStr.length!=0){
                 for(let i =0;i<imageStr.length;i++){
                     let base64Data = imageStr[i].replace(/^data:image\/\w+;base64,/, "");
-                    console.log(base64Data);
                     let dataBuffer = new Buffer(base64Data,'base64');
-                    fs.writeFile(`../Crophe/news/${name+i}.png`,dataBuffer,(err:any)=>{
+                    let time = (new Date()).valueOf();
+                    fs.writeFile(`../Crophe/newsimg/${time+i})}.png`,dataBuffer,(err:any)=>{
                         if(err){
-                            throw new Error("写入失败" +err)
+                            throw new Error("写入失败" +err) 
                         }else{
                             console.log("保存成功")
                         }
                     })
-                    replacestr.push(`news/${name+i}.png`);
+                    replacestr.push(`newsimg/${time+i})}.png`);
                     console.log(replacestr);
                 }
                 content = await this.setImg(content,imageStr,replacestr);
@@ -77,11 +81,7 @@ export class NewsService {
     async addENNews(conditions:any){
         try{
             let {name,content} = conditions;
-            conditions = {
-                title:name,
-                content
-            }
-            this.NewsENRepository.insert(conditions);
+            this.NewsENRepository.insert({title:name,content});
             return "添加成功"
         }catch(e){
             throw new Error("添加失败");
@@ -97,16 +97,16 @@ export class NewsService {
             
             for(let i =0;i<imageStr.length;i++){
                 let base64Data = imageStr[i].replace(/^data:image\/\w+;base64,/, "");
-                console.log(base64Data);
                 let dataBuffer = new Buffer(base64Data,'base64');
-                fs.writeFile(`../Crophe/news/${name+i}.png`,dataBuffer,(err:any)=>{
+                let time = (new Date()).valueOf();
+                fs.writeFile(`../Crophe/newsimg/${time+i}.png`,dataBuffer,(err:any)=>{
                     if(err){
                         throw new Error("写入失败" +err)
                     }else{
                         console.log("保存成功")
                     }
                 })
-                replacestr.push(`/news/${name+i}.png`);
+                replacestr.push(`newsimg/${time+i}.png`);
             }
             content = await this.setImg(content,imageStr,replacestr);
             
@@ -120,11 +120,7 @@ export class NewsService {
     async updateENNews(conditions:any){
         try{
             let {name,content,id} = conditions;
-            conditions = {
-                title:name,
-                content
-            }
-            this.NewsENRepository.update(id,conditions);
+            this.NewsENRepository.update(id,{title:name,content});
             return "更新成功"
         }catch(e){
             throw new Error("更新失败");

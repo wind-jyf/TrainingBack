@@ -31,8 +31,10 @@ export class InstrumentService {
         const str = /<img\b.*?(?:\>|\/>)/gi;
         const str1 = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
         let image = content.match(str);
-        for(let i = 0;i<image.length;i++){
-            imgsrc[i] = image[i].match(str1)[1];
+        if(image){
+            for(let i = 0;i<image.length;i++){
+                imgsrc[i] = image[i].match(str1)[1];
+            }
         }
         return imgsrc;
     }
@@ -50,16 +52,16 @@ export class InstrumentService {
             let replacestr:any[] = [];
             for(let i =0;i<imageStr.length;i++){
                 let base64Data = imageStr[i].replace(/^data:image\/\w+;base64,/, "");
-                console.log(base64Data);
+                let time = (new Date()).valueOf();
                 let dataBuffer = new Buffer(base64Data,'base64');
-                fs.writeFile(`../Crophe/instument/${name}.png`,dataBuffer,(err:any)=>{
+                fs.writeFile(`../Crophe/instument/${time+i}.png`,dataBuffer,(err:any)=>{
                     if(err){
                         throw new Error("写入失败" +err)
                     }else{
                         console.log("保存成功")
                     }
                 })
-                replacestr.push(`/instument/${name+i}.png`);
+                replacestr.push(`/instument/${time+i}.png`);
                 console.log(replacestr);
             }
             content = await this.setImg(content,imageStr,replacestr);
@@ -78,16 +80,16 @@ export class InstrumentService {
             let replacestr:any[] = [];
             for(let i =0;i<imageStr.length;i++){
                 let base64Data = imageStr[i].replace(/^data:image\/\w+;base64,/, "");
-                console.log(base64Data);
+                let time = (new Date()).valueOf();
                 let dataBuffer = new Buffer(base64Data,'base64');
-                fs.writeFile(`../Crophe/instument/${name}.png`,dataBuffer,(err:any)=>{
+                fs.writeFile(`../Crophe/instument/${time+i}.png`,dataBuffer,(err:any)=>{
                     if(err){
                         throw new Error("写入失败" +err)
                     }else{
                         console.log("保存成功")
                     }
                 })
-                replacestr.push(`/instument/${name}.png`);
+                replacestr.push(`/instument/${time+i}.png`);
             }
             content = await this.setImg(content,imageStr,replacestr);
             conditions.content = content;
