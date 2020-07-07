@@ -1,19 +1,19 @@
 import {
-    Get,
-    QueryParam,
-    Controller,
-    UseBefore,
-    BodyParam,
-    Post,
-    Put,
-    Delete 
-  } from 'routing-controllers';
-  import { FormatResponse } from '@/app/middlewares/formatResponse';
+  Get,
+  QueryParam,
+  Controller,
+  UseBefore,
+  BodyParam,
+  Post,
+  Put,
+  Delete
+} from 'routing-controllers';
+import { FormatResponse } from '@/app/middlewares/formatResponse';
 
-  import { paginationUtils } from '@/utils';
+import { paginationUtils } from '@/utils';
 
-  import { NewsService } from './service';
-  import { LANGUAGE } from '@/constants';
+import { NewsService } from './service';
+import { LANGUAGE } from '@/constants';
 
 
   @Controller('/api/crophe')
@@ -61,35 +61,35 @@ import {
                 return await zhResult();
           }
 
-      }
+  }
 
-      @Get('/newsListById')
-      async getNewsListById(
-        @QueryParam('id') id: number,
-        @QueryParam('lan') lan:string
-      ) {
-          const zhResult = async ()=>{
-            const [ news ] = await this.newsService.getNewsById({id});
-            return {
-              ...news
-            };
-          }
-          const enResult = async ()=>{
-            const [ news ] = await this.newsService.getENNewsById({id});
-            return {
-              ...news
-            };
-          }
-          switch(lan){
-            case LANGUAGE.zh:
-                return await zhResult();
-            case LANGUAGE.en:
-                return await enResult();
-            default:
-                return await zhResult();
-          }
+  @Get('/newsListById')
+  async getNewsListById(
+    @QueryParam('id') id: number,
+    @QueryParam('lan') lan: string
+  ) {
+    const zhResult = async () => {
+      const [news] = await this.newsService.getNewsById({ id });
+      return {
+        ...news
+      };
+    }
+    const enResult = async () => {
+      const [news] = await this.newsService.getENNewsById({ id });
+      return {
+        ...news
+      };
+    }
+    switch (lan) {
+      case LANGUAGE.zh:
+        return await zhResult();
+      case LANGUAGE.en:
+        return await enResult();
+      default:
+        return await zhResult();
+    }
 
-      }
+  }
 
       @Post('/news')
       async addNews(
@@ -134,39 +134,39 @@ import {
           return result;
         }
 
-        switch(lan){
-          case LANGUAGE.zh:
-              return await zhResult();
-          case LANGUAGE.en:
-              return await enResult();
-          default:
-              return await zhResult();
-        }
-      }
-
-      @Delete('/news')
-      async deleteNews(
-        @BodyParam('id') id:number,
-        @BodyParam('lan') lan:string
-      ){
-        const zhResult = async ()=>{
-          const [ news ] = await this.newsService.getNewsById({id});
-          const result = await this.newsService.deleteNews({id});
-          return result;
-        }
-        const enResult = async ()=>{
-          const [ news ] = await this.newsService.getENNewsById({id});
-          const result = await this.newsService.deleteENNews({...news});
-          return result;
-        }
-        switch(lan){
-          case LANGUAGE.zh:
-              return await zhResult();
-          case LANGUAGE.en:
-              return await enResult();
-          default:
-              return await zhResult();
-        }
-      }
-      
+    switch (lan) {
+      case LANGUAGE.zh:
+        return await zhResult();
+      case LANGUAGE.en:
+        return await enResult();
+      default:
+        return await zhResult();
+    }
   }
+
+  @Delete('/news')
+  async deleteNews(
+    @BodyParam('id') id: number,
+    @BodyParam('lan') lan: string
+  ) {
+    const zhResult = async () => {
+      const [news] = await this.newsService.getNewsById({ id });
+      const result = await this.newsService.deleteNews({ id });
+      return result;
+    }
+    const enResult = async () => {
+      const [news] = await this.newsService.getENNewsById({ id });
+      const result = await this.newsService.deleteENNews({ ...news });
+      return result;
+    }
+    switch (lan) {
+      case LANGUAGE.zh:
+        return await zhResult();
+      case LANGUAGE.en:
+        return await enResult();
+      default:
+        return await zhResult();
+    }
+  }
+
+}

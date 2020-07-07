@@ -1,20 +1,157 @@
 import { Service } from 'typedi';
-import { getConnection } from 'typeorm';
-import { DataEntity, ImgEntity } from './entity';
+import { getConnection, getRepository } from 'typeorm';
+import { DataEntity, ImgEntity, FileEntity } from './entity';
 import { isProduction } from '@/constants';
-
+import { objectUtils } from '@/utils';
+const fs = require('fs');
 const mysql = require('mysql');
 const config = isProduction ? require('../../../config/proconfig') : require('../../../config/devconfig');
 const connection = mysql.createConnection(config);
 
+const DATA_PATH = '../Crophe/';
+
 @Service()
 export class CategoryService {
+    async getDataCategory(type: any) {
+        return await getRepository(DataEntity)
+            .createQueryBuilder("data")
+            .where("data.type = :type", type)
+            .getMany();
+    }
+
+    async getImageCategory(type: any) {
+        return await getRepository(ImgEntity)
+            .createQueryBuilder("img")
+            .where("img.type = :type", type)
+            .getMany();
+    }
+
     async createDataCategory(conditions: any) {
-        return getConnection()
+        return await getConnection()
             .createQueryBuilder()
             .insert()
             .into(DataEntity)
             .values(conditions)
+            .execute();
+    }
+
+    async createImageCategory(conditions: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into(ImgEntity)
+            .values(conditions)
+            .execute();
+    }
+
+    async deleteDataCategory(id: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(DataEntity)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async deleteImageCategory(id: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(ImgEntity)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async updateDataCategory(id: any, conditions: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .update(DataEntity)
+            .set(conditions)
+            .where("id = :id", id)
+            .execute();
+    }
+
+    async updateImageCategory(id: any, conditions: any) {
+        return await getConnection()
+            .createQueryBuilder()
+            .update(ImgEntity)
+            .set(conditions)
+            .where("id = :id", id)
+            .execute();
+    }
+
+}
+
+@Service()
+export class FileService {
+    async getDir(path: string) {
+        const dir = await fs.promises.opendir(path);
+        const dirName = [];
+
+        for await (const dirent of dir) {
+            if (dirent.isDirectory()) {
+                dirName.push(dirent.name);
+            }
+        }
+        return dirName;
+    }
+
+    async getFile(path: string) {
+        const dir = await fs.promises.opendir(path);
+        const fileName = [];
+
+        for await (const dirent of dir) {
+            if (dirent.isFile()) {
+                fileName.push(dirent.name);
+            }
+        }
+        return fileName;
+    }
+
+    async getFileList(conditions: any, pagination?: any) {
+        return await getRepository(FileEntity)
+            .findAndCount(objectUtils.clean({
+                ...conditions,
+                ...pagination
+            }))
+    }
+
+    async uploadFile(conditions: any) {
+        const { name, date, file } = conditions;
+        const value = {
+            name,
+            path: `data/${file.originalname}`,
+            date,
+        }
+        await fs.writeFile(`${DATA_PATH}data/${file.originalname}`, file.buffer, (err: any) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                console.log('写入成功');
+            }
+        })
+        return await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into(FileEntity)
+            .values(value)
+            .execute();
+    }
+
+    async deleteFile(conditions: any) {
+        const { id, path } = conditions;
+        await fs.unlink(`${DATA_PATH}${path}`, (err: any) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                console.log('删除成功');
+            }
+        })
+        return await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(FileEntity)
+            .where("id = :id", { id })
             .execute();
     }
 }
