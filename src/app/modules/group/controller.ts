@@ -5,6 +5,7 @@ import {
   Post,
   Put,
   BodyParam,
+  Body,
   Delete,
   UseBefore,
   UploadedFile
@@ -15,11 +16,11 @@ import { paginationUtils } from '@/utils';
 
 import { GroupService } from './service';
 import { LANGUAGE } from '@/constants';
-
+const bodyParser = require('koa-bodyparser');
 
 
 @Controller('/api/crophe')
-@UseBefore(FormatResponse)
+@UseBefore(FormatResponse,bodyParser())
 export class GroupController {
     constructor(private groupService: GroupService) {}
 
@@ -88,18 +89,24 @@ export class GroupController {
 
     @Post('/group')
     async addMember(
+      @BodyParam('left') left:string,
+      @BodyParam('foot') foot:string,
+      @BodyParam('content') content:string,
       @BodyParam('name') name:string,
-      @BodyParam('descripe') descripe:string,
+      @BodyParam('describe') descripe:string,
       @BodyParam('lan') lan:string,
-      @UploadedFile('avator') avator:any
+      @UploadedFile('avator') avator:any,
     ){
+      console.log(name);
+      console.log(left);
       const zhResult = async ()=>{
         const result = await this.groupService.addMember({name,descripe,avator});
         return result;
       }
-
+      
       const enResult = async ()=>{
-        const result = await this.groupService.addENMember({name,descripe,avator});
+        
+        const result = await this.groupService.addENMember({left,foot,content,avator});
         return result;
       }
 
@@ -117,17 +124,21 @@ export class GroupController {
     async updateGroup(
       @BodyParam('id') id:number,
       @BodyParam('name') name:string,
-      @BodyParam('descripe') descripe:string,
+      @BodyParam('describe') descripe:string,
       @BodyParam('lan') lan:string,
-      @UploadedFile('avator') avator:any
+      @UploadedFile('avator') avator:any,
+      @BodyParam('left') left:string,
+      @BodyParam('foot') foot:string,
+      @BodyParam('content') content:string
     ){
+      console.log(left);
       const zhResult = async ()=>{
-        const result = await this.groupService.addMember({id,name,descripe,avator});
+        const result = await this.groupService.updateGroup({id,name,descripe,avator});
         return result;
       }
 
       const enResult = async ()=>{
-        const result = await this.groupService.addENMember({id,name,descripe,avator});
+        const result = await this.groupService.updateEnGroup({id,left,foot,content,avator});
         return result;
       }
 
@@ -153,7 +164,7 @@ export class GroupController {
       }
 
       const enResult = async ()=>{
-        const result = await this.groupService.deleteENMember({});
+        const result = await this.groupService.deleteENMember({id});
         return result;
       }
 

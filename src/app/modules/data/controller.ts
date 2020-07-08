@@ -49,7 +49,7 @@ export class CategoryController {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
-                    path: `data/pictures${path}`
+                    path: `data/pictures-new${path}`
                 });
                 return arr;
             }, [] as any);
@@ -61,12 +61,13 @@ export class CategoryController {
                 let fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}/${dirName[i]}`);
                 let pictures = fileName.reduce((arr, name, index) => {
                     arr.push({
-                        path: `data/pictures${path}`
+                        path: `data/pictures-new${path}`
                     });
                     return arr;
                 }, [] as any);
                 result = [...result, ...pictures];
             }
+
             return result;
         }
     }
@@ -82,7 +83,6 @@ export class CategoryController {
                 dataObj[i] = item[i];
             }
         })
-        console.log(dataObj);
         const filterArr: any = Object.keys(dataObj);
         const data: any = await getData(dataObj);
         for (let i in data[0]) {
