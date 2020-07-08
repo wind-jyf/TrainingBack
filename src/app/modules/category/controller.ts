@@ -52,10 +52,10 @@ export class CategoryController {
         array: formatter(res, categoryList[i])
       });
     }
-    // result.push({
-    //   title:categoryData.key_name,
-    //   array:categoryData.key_type.split(',')
-    // })
+    result.push({
+      title: categoryData.key_name,
+      array: categoryData.key_type.split(',')
+    })
     return result;
   }
 
@@ -76,23 +76,27 @@ export class CategoryController {
     let resultSet = await getDirData(PICTURES_PATH + '\\' + type + '\\' + Year_item);
     let result: object[] = [];
     for (let i: number = 0; i < categoryList.length; i++) {
-      if (i == categoryList.length - 1) {
-        resultSet[i].unshift('all')
-        result.push({
-          title: categoryList[i],
-          array: resultSet[i]
-        });
-      } else {
-        result.push({
-          title: categoryList[i],
-          array: resultSet[i]
-        });
-      }
+      // if (i == categoryList.length - 1) {
+      //   resultSet[i].unshift('all')
+      //   result.push({
+      //     title: categoryList[i],
+      //     array: resultSet[i]
+      //   });
+      // } else {
+      //   result.push({
+      //     title: categoryList[i],
+      //     array: resultSet[i]
+      //   });
+      // }
+      result.push({
+        title: categoryList[i],
+        array: resultSet[i]
+      });
     }
-    // result.push({
-    //   title:categoryData.key_name,
-    //   array:categoryData.key_type.split(',')
-    // })
+    result.push({
+      title:categoryData.key_name,
+      array:categoryData.key_type.split(',')
+    })
     return result;
   }
 }
