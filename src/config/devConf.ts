@@ -8,7 +8,7 @@ export const devConfig: IConfig = {
                 host: "localhost",
                 port: 3306,
                 username: "root",
-                password: "20180625th",
+                password: "jyf13939620772.",
                 database: "dnucleomeorg",
         }
 }
