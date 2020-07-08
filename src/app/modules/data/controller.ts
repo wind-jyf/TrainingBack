@@ -31,12 +31,18 @@ export class CategoryController {
     ) {
         let path: string = '';
         let notAll: boolean = true;
-        for (let i in searchData) {
-            if (searchData[i] === 'all') {
+        const dataObj: any = {};
+        searchData.forEach((item: any) => {
+            for (let i in item) {
+                dataObj[i] = item[i];
+            }
+        })
+        for (let i in dataObj) {
+            if (dataObj[i] === 'all') {
                 notAll = false;
                 break;
             }
-            path += `/${searchData[i]}`;
+            path += `/${dataObj[i]}`;
         }
 
         if (notAll) {
@@ -70,8 +76,15 @@ export class CategoryController {
     async getDataData(
         @BodyParam('searchData') searchData: any
     ) {
-        const filterArr: any = Object.keys(searchData);
-        const data: any = await getData(searchData);
+        const dataObj: any = {};
+        searchData.forEach((item: any) => {
+            for (let i in item) {
+                dataObj[i] = item[i];
+            }
+        })
+        console.log(dataObj);
+        const filterArr: any = Object.keys(dataObj);
+        const data: any = await getData(dataObj);
         for (let i in data[0]) {
             if (filterArr.includes(i) || typeof data[0][i] === 'object') {
                 delete data[0][i];
