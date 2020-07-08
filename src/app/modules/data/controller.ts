@@ -31,37 +31,40 @@ export class CategoryController {
     ) {
         let path: string = '';
         let notAll: boolean = true;
-        for (let i in searchData) {
-            if (searchData[i] === 'all') {
-                notAll = false;
-                break;
-            }
-            path += `/${searchData[i]}`;
-        }
+        let condition = '';
+        const dataObj: any = {};
 
-        if (notAll) {
+        for (let i = 0; i < searchData.length; i++) {
+            let item = searchData[i];
+            if (i === searchData.length - 1) {
+                condition = item[Object.keys(item)[0]];
+            } else {
+                dataObj[i] = item[Object.keys(item)[0]];
+            }
+        }
+        for (let i in dataObj) {
+            path += `/${dataObj[i]}`;
+        }
+        if (condition === 'all') {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
-                    path: `data/pictures${path}`
+                    path: `data/pictures-new${path}/${name}`
                 });
                 return arr;
             }, [] as any);
             return pictures;
         } else {
-            const dirName = await this.fileService.getDir(`${PICTURES_PATH}${path}`);
-            let result: any = [];
-            for (let i in dirName) {
-                let fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}/${dirName[i]}`);
-                let pictures = fileName.reduce((arr, name, index) => {
+            const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
+            const pictures = fileName.reduce((arr, name, index) => {
+                if (name.indexOf(condition) !== -1) {
                     arr.push({
-                        path: `data/pictures${path}`
+                        path: `data/pictures-new${path}/${name}`
                     });
-                    return arr;
-                }, [] as any);
-                result = [...result, ...pictures];
-            }
-            return result;
+                }
+                return arr;
+            }, [] as any);
+            return pictures;
         }
     }
 
@@ -70,8 +73,14 @@ export class CategoryController {
     async getDataData(
         @BodyParam('searchData') searchData: any
     ) {
-        const filterArr: any = Object.keys(searchData);
-        const data: any = await getData(searchData);
+        const dataObj: any = {};
+        searchData.forEach((item: any) => {
+            for (let i in item) {
+                dataObj[i] = item[i];
+            }
+        })
+        const filterArr: any = Object.keys(dataObj);
+        const data: any = await getData(dataObj);
         for (let i in data[0]) {
             if (filterArr.includes(i) || typeof data[0][i] === 'object') {
                 delete data[0][i];
