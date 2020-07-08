@@ -31,44 +31,40 @@ export class CategoryController {
     ) {
         let path: string = '';
         let notAll: boolean = true;
+        let condition = '';
         const dataObj: any = {};
-        searchData.forEach((item: any) => {
-            for (let i in item) {
-                dataObj[i] = item[i];
+
+        for (let i = 0; i < searchData.length; i++) {
+            let item = searchData[i];
+            if (i === searchData.length - 1) {
+                condition = item[Object.keys(item)[0]];
+            } else {
+                dataObj[i] = item[Object.keys(item)[0]];
             }
-        })
+        }
         for (let i in dataObj) {
-            if (dataObj[i] === 'all') {
-                notAll = false;
-                break;
-            }
             path += `/${dataObj[i]}`;
         }
-
-        if (notAll) {
+        if (condition === 'all') {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
-                    path: `data/pictures-new${path}`
+                    path: `data/pictures-new${path}/${name}`
                 });
                 return arr;
             }, [] as any);
             return pictures;
         } else {
-            const dirName = await this.fileService.getDir(`${PICTURES_PATH}${path}`);
-            let result: any = [];
-            for (let i in dirName) {
-                let fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}/${dirName[i]}`);
-                let pictures = fileName.reduce((arr, name, index) => {
+            const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
+            const pictures = fileName.reduce((arr, name, index) => {
+                if (name.indexOf(condition) !== -1) {
                     arr.push({
-                        path: `data/pictures-new${path}`
+                        path: `data/pictures-new${path}/${name}`
                     });
-                    return arr;
-                }, [] as any);
-                result = [...result, ...pictures];
-            }
-
-            return result;
+                }
+                return arr;
+            }, [] as any);
+            return pictures;
         }
     }
 
