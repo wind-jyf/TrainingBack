@@ -41,6 +41,10 @@ export class GroupController {
        
        const enResult = async () => {
         const [groupList, total] = await this.groupService.getGroupEnAndCount(paginationUtils.getCondition(page, pageSize));
+        for(let i =0;i<groupList.length;i++){
+          groupList[i]['img'] = `http://plantphenomics.hzau.edu.cn/${groupList[i]['img']}`
+        }
+        console.log(groupList);
         return {
           groupList,
           pagination: paginationUtils.getResponse(total, page, pageSize)

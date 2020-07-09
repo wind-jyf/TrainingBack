@@ -64,14 +64,49 @@ import { LANGUAGE } from '@/constants';
           }
 
   }
-
+  async getImg(content: any){
+    let imgsrc:any=[];
+    const str = /<img\b.*?(?:\>|\/>)/gi;
+    const str1 = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
+    let image = content.match(str);
+    console.log(image)
+    
+    if(image){
+        console.log("替换")
+        for(let i = 0;i<image.length;i++){
+            imgsrc[i] = image[i].match(str1)[1];
+        }
+    }
+    
+    console.log('okk')
+    return imgsrc;
+}
+  async setImg(content:any,imgsrc:any,replacestr:any){
+      for(let i = 0;i<imgsrc.length;i++){
+          content = content.replace(imgsrc[i],replacestr[i])
+      }
+      return content;
+  }
   @Get('/newsListById')
   async getNewsListById(
     @QueryParam('id') id: number,
     @QueryParam('lan') lan: string
   ) {
     const zhResult = async () => {
+      
       const [news] = await this.newsService.getNewsById({ id });
+      let {content} = news;
+      let imageSrc = [];
+      imageSrc = await this.getImg(content);
+      let replacestr:any[] = [];
+      if(imageSrc.length!=0){
+        for(let i =0;i<imageSrc.length;i++){
+          replacestr.push(`http://plantphenomics.hzau.edu.cn/${imageSrc[i]}`)
+        }
+        content = await this.setImg(content,imageSrc,replacestr);
+        news.content = content; 
+        //console.log(news);
+      }
       return {
         ...news
       };
