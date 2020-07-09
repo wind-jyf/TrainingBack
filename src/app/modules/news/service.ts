@@ -16,10 +16,12 @@ export class NewsService {
         return this.NewsENRepository.findAndCount(objectUtils.clean({ ...conditions, ...pagination }))
     }
     async getNewsById(conditions: FindConditions<NewsEntity>) {
-        return this.NewsRepository.find(objectUtils.clean({ ...conditions }))
+        return  this.NewsRepository.find(objectUtils.clean({ ...conditions }))
+   
     }
     async getENNewsById(conditions: FindConditions<NewsEntity>) {
         return this.NewsENRepository.find(objectUtils.clean({ ...conditions }))
+
     }
     async getImg(content: any){
         let imgsrc:any=[];
