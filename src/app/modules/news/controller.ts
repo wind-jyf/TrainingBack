@@ -69,16 +69,16 @@ import { LANGUAGE } from '@/constants';
     const str = /<img\b.*?(?:\>|\/>)/gi;
     const str1 = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
     let image = content.match(str);
-    console.log(image)
+    //console.log(image)
     
     if(image){
-        console.log("替换")
+        //console.log("替换")
         for(let i = 0;i<image.length;i++){
             imgsrc[i] = image[i].match(str1)[1];
         }
     }
     
-    console.log('okk')
+    //console.log('okk')
     return imgsrc;
 }
   async setImg(content:any,imgsrc:any,replacestr:any){
@@ -95,6 +95,7 @@ import { LANGUAGE } from '@/constants';
     const zhResult = async () => {
       
       const [news] = await this.newsService.getNewsById({ id });
+      
       let {content} = news;
       let imageSrc = [];
       imageSrc = await this.getImg(content);
@@ -105,8 +106,9 @@ import { LANGUAGE } from '@/constants';
         }
         content = await this.setImg(content,imageSrc,replacestr);
         news.content = content; 
-        //console.log(news);
       }
+      console.log(news);
+      
       return {
         ...news
       };

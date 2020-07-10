@@ -24,7 +24,12 @@ export class ProjectController {
     @QueryParam('page_size') pageSize?: number,
     @QueryParam('page') page?: number,
   ) {
-    const [projectList, total] = await this.projectService.getProjectEntityAndCount(paginationUtils.getCondition(page, pageSize));
+    const [projectList, total] = await this.projectService.getProjectEntityAndCount(
+      {
+        order: { id: 'DESC' }
+      }, 
+      paginationUtils.getCondition(page, pageSize)
+      );
     return {
       projectList,
       pagination: paginationUtils.getResponse(total, page, pageSize)
