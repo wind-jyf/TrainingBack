@@ -102,7 +102,12 @@ import { LANGUAGE } from '@/constants';
       let replacestr:any[] = [];
       if(imageSrc.length!=0){
         for(let i =0;i<imageSrc.length;i++){
-          replacestr.push(`http://plantphenomics.hzau.edu.cn/${imageSrc[i]}`)
+          if(/^http/g.test(imageSrc[i])){
+            replacestr.push(imageSrc[i]);
+          }else{
+            replacestr.push(`http://plantphenomics.hzau.edu.cn/${imageSrc[i]}`)
+          }
+          
         }
         content = await this.setImg(content,imageSrc,replacestr);
         news.content = content; 
