@@ -49,7 +49,7 @@ export class CategoryController {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
-                    path: `data/pictures${path}`,
+                    path: `data/pictures-new${path}/${name}`,
                     name: name
                 });
                 return arr;
@@ -60,7 +60,7 @@ export class CategoryController {
             const pictures = fileName.reduce((arr, name, index) => {
                 if (name.indexOf(condition) !== -1) {
                     arr.push({
-                        path: `data/pictures${path}`,
+                        path: `data/pictures-new${path}/${name}`,
                         name: name
                     });
                 }

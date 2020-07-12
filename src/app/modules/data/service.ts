@@ -184,6 +184,7 @@ export const getData: any = (conditions: any) => {
                         }
                     })
                     getDataSql = `select Year_item${selectSql} from ${table} where Year_item='${conditions.Year_item}' ${whereSql}`;
+                    console.log(getDataSql);
                 }
                 connection.query(getDataSql, (err: any, res: any) => {
                     if (err) {

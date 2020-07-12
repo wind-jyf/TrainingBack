@@ -1,8 +1,8 @@
 const devconfig = {
     host: 'localhost',
     user: 'root',
-    password: 'jyf13939620772.',
-    database: 'dnucleomeorg',
+    password: '',
+    database: 'dnutest',
     port: '3306',
     useConnectionPooling: true
 }
