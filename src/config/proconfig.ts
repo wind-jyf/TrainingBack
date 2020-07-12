@@ -2,7 +2,7 @@ const proconfig = {
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'dnucleomeorg',
+    database: 'dnutest',
     port: '3306',
     useConnectionPooling: true
 }

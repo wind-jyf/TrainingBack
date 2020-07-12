@@ -24,7 +24,9 @@ async function startKoaServer() {
     templateMiddleware(app);
     app.use(sessionMiddleware(app));
     app.use(bodyParser({
-      formLimit:"10mb"
+      formLimit:"10mb",
+      jsonLimit:"10mb",
+      textLimit:"10mb"
     }))
     app.listen(config.port, config.hostname);
   
