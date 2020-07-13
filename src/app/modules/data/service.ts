@@ -164,6 +164,7 @@ export const getData: any = (conditions: any) => {
         connection.query(getColumnsSql, (err: any, result: any) => {
             if (err) {
                 console.log('outside:' + err.message);
+                resolve(String(err.message));
             } else {
                 const lastKey: string = Object.keys(conditions)[Object.keys(conditions).length - 1];
                 const lastData: string = conditions[lastKey];
@@ -184,10 +185,12 @@ export const getData: any = (conditions: any) => {
                         }
                     })
                     getDataSql = `select Year_item${selectSql} from ${table} where Year_item='${conditions.Year_item}' ${whereSql}`;
+                    console.log(getDataSql);
                 }
                 connection.query(getDataSql, (err: any, res: any) => {
                     if (err) {
                         console.log('inside' + err.message);
+                        resolve(String(err.message) + getDataSql);
                     } else {
                         resolve(res);
                     }

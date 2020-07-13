@@ -49,7 +49,8 @@ export class CategoryController {
             const fileName = await this.fileService.getFile(`${PICTURES_PATH}${path}`);
             const pictures = fileName.reduce((arr, name, index) => {
                 arr.push({
-                    path: `data/pictures-new${path}/${name}`
+                    path: `data/pictures-new${path}/${name}`,
+                    name: name
                 });
                 return arr;
             }, [] as any);
@@ -59,7 +60,8 @@ export class CategoryController {
             const pictures = fileName.reduce((arr, name, index) => {
                 if (name.indexOf(condition) !== -1) {
                     arr.push({
-                        path: `data/pictures-new${path}/${name}`
+                        path: `data/pictures-new${path}/${name}`,
+                        name: name
                     });
                 }
                 return arr;
@@ -73,6 +75,12 @@ export class CategoryController {
     async getDataData(
         @BodyParam('searchData') searchData: any
     ) {
+        /*         const searchData = [
+                    { type: "rice" },
+                    { Year_item: "2015-tiller" },
+                    { Accession_ID: "002(W051)" },
+                    { Trait: "GCV" }] */
+
         const dataObj: any = {};
         searchData.forEach((item: any) => {
             for (let i in item) {
@@ -81,12 +89,16 @@ export class CategoryController {
         })
         const filterArr: any = Object.keys(dataObj);
         const data: any = await getData(dataObj);
-        for (let i in data[0]) {
-            if (filterArr.includes(i) || typeof data[0][i] === 'object') {
-                delete data[0][i];
+        if (typeof data === 'string') {
+            return data;
+        } else {
+            for (let i in data[0]) {
+                if (filterArr.includes(i) || typeof data[0][i] === 'object') {
+                    delete data[0][i];
+                }
             }
+            return data;
         }
-        return data;
     }
 
     /**
